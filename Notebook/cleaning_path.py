@@ -241,10 +241,18 @@ def remove_space(pd_series):
     pd_series=pd_series.replace(r' ','',Regex=True)
     return pd_series
 
-def export_cleaned_files(df,count):
-    path='C:/Users/Sarv/Desktop/vs_code/Git/ETL-pipeline/data/processed/trade_history_h5/'
+def export_cleaned_files(df,count,path):
     return df.to_hdf(path=path+f'trade_history_table_b{count}_cleaned.h5',
                      key='trade_history_table_b1_cleaned',
                      mode='a',
                      complevel=5,
                      index=False,format='table')
+
+def pipeline (chunk):
+    try:
+        chunk.pipe(clean_cols).pipe(ar_to_fa).pipe(str_to_date).pipe(date_to_jdate)
+        chunk.pipe(export_cleaned_files)
+        count+=1
+    except:
+        print('failed')
+
